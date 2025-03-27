@@ -21,11 +21,17 @@ class _HomeState extends State<Home> {
     super.initState();
     Future(() async {
       _refreshIndicatorKey.currentState?.show();
-      var data = await GeoManager.instance.GetWeather();
+      await updateWeather();
+    });
+  }
+
+  Future<void> updateWeather() async {
+    var data = await GeoManager.instance.GetWeather();
+    if (mounted) {
       setState(() {
         this.mainTemp = data;
       });
-    });
+    }
   }
 
   @override
@@ -33,12 +39,7 @@ class _HomeState extends State<Home> {
     return RefreshIndicator(
       color: Colors.black,
       key: _refreshIndicatorKey,
-      onRefresh: () async {
-        var temp = await GeoManager.instance.GetWeather();
-        setState(() {
-          this.mainTemp = temp;
-        });
-      },
+      onRefresh: updateWeather,
       child: ListView(
         children: [
           Stack(
