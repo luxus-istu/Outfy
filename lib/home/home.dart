@@ -75,11 +75,11 @@ class _HomeState extends State<Home> {
             ],
           ),
           Container(
-            padding: EdgeInsets.only(right: 20, left: 20, top: 30),
+            padding: const EdgeInsets.only(right: 20, left: 20, top: 30),
             child: Column(
               children: [
                 Padding(
-                  padding: EdgeInsets.only(left: 10),
+                  padding: const EdgeInsets.only(left: 10),
                   child: Row(
                     spacing: 14,
                     children: [

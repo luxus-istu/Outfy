@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:outfy/Managers/types/types.dart';
@@ -9,9 +8,6 @@ class GeoManager {
   GeoManager._();
   static final instance = GeoManager._();
   bool serviceEnabled = false;
-
-  late Position position;
-
   final WeatherRequest wr = WeatherRequest(dotenv.env['WEATHER_API']!);
 
   Future<void> getPermission() async {
@@ -35,27 +31,26 @@ class GeoManager {
     }
   }
 
-  Future<void> getPos() async {
+  Future<Position> getPos() async {
     if (!serviceEnabled) {
       return Future.error('Location services are disabled.');
     }
-    this.position = await Geolocator.getCurrentPosition();
-    debugPrint(this.position.toString());
+    return await Geolocator.getCurrentPosition();
   }
 
   Future<MainTemp> GetWeather() async {
-    await getPos();
+    final Position position = await getPos();
     final forecastWeather = await wr.getForecastWeatherByLocation(
-        this.position.latitude, this.position.longitude);
+        position.latitude, position.longitude);
 
     final realtimeWeather = await wr.getRealtimeWeatherByLocation(
-        this.position.latitude, this.position.longitude);
+        position.latitude, position.longitude);
 
     return MainTemp(
-        Temp: realtimeWeather.current.tempC.toString(),
+        Temp: "${realtimeWeather.current.tempC?.toInt()}",
         FeelsTemp:
             "Ощущается как ${realtimeWeather.current.feelslikeC?.toInt()}",
         MaxAndMin:
-            "${forecastWeather.forecast.first.day.mintempC}° / ${forecastWeather.forecast.first.day.maxtempC}°");
+            "${forecastWeather.forecast.first.day.maxtempC?.toInt()}° / ${forecastWeather.forecast.first.day.mintempC?.toInt()}°");
   }
 }
