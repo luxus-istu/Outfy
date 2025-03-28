@@ -11,6 +11,18 @@ const twathertext = TextStyle(
     fontFamily: "Montserrat",
     color: Color(0xffffffff));
 
+const twardrobedatetext = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    fontFamily: "Montserrat",
+    color: Color(0xff8F8F8F));
+
+const twardrobetext = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    fontFamily: "Montserrat",
+    color: Color(0xff101010));
+
 const twatherheader = TextStyle(
     fontSize: 64,
     fontWeight: FontWeight.w800,

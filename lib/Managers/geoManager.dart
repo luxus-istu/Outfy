@@ -1,8 +1,11 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:outfy/Managers/types/types.dart';
+import 'package:outfy/utils/weatherCard.dart';
 
 import '../weather/weatherapi.dart';
+
+const dates = ["Сегодня", "Завтра", "Послезавтра"];
 
 class GeoManager {
   GeoManager._();
@@ -52,5 +55,25 @@ class GeoManager {
             "Ощущается как ${realtimeWeather.current.feelslikeC?.toInt()}",
         MaxAndMin:
             "${forecastWeather.forecast.first.day.maxtempC?.toInt()}° / ${forecastWeather.forecast.first.day.mintempC?.toInt()}°");
+  }
+
+  Future<List<WeatherCard>> GetWeatherCard() async {
+    final Position position = await getPos();
+    final forecastWeather = await wr.getForecastWeatherByLocation(
+        position.latitude, position.longitude,
+        forecastDays: 3);
+
+    final List<WeatherCard> cards = [];
+    for (var i = 0; i < forecastWeather.forecast.length; i++) {
+      final day = forecastWeather.forecast[i];
+      final card = new WeatherCard(
+          MaxAndMin:
+              "${day.day.maxtempC?.toInt()}° / ${day.day.mintempC?.toInt()}°",
+          date: DateTime.parse(day.date ?? ""),
+          text_date: dates[i],
+          icon_path: "assets/images/cloudy-icon2.png");
+      cards.add(card);
+    }
+    return cards;
   }
 }

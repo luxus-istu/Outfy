@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:outfy/Managers/geoManager.dart';
 import 'package:outfy/home/home.dart';
 import 'package:outfy/utils/theme.dart';
@@ -8,6 +9,7 @@ import 'package:outfy/wardrobe/wardrobe.dart';
 void main() async {
   await dotenv.load(fileName: ".env");
   await GeoManager.instance.getPermission();
+  await initializeDateFormatting('ru');
   runApp(const MyApp());
 }
 
