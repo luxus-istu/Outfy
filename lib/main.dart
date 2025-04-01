@@ -37,6 +37,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.from(
+          useMaterial3: false,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.white)),
       title: "Outfy",
       home: Scaffold(
