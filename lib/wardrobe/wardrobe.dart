@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:outfy/Managers/geoManager.dart';
+import 'package:outfy/utils/theme.dart';
 import 'package:outfy/utils/weatherCard.dart';
 
 class Wardrobe extends StatefulWidget {
@@ -9,15 +10,12 @@ class Wardrobe extends StatefulWidget {
   State<Wardrobe> createState() => _WardrobeState();
 }
 
-class _WardrobeState extends State<Wardrobe> {
+class _WardrobeState extends State<Wardrobe> with TickerProviderStateMixin {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
 
-  List<WeatherCard> forecast = [
-    WeatherCard(date: DateTime.now()),
-    WeatherCard(date: DateTime.now()),
-    WeatherCard(date: DateTime.now())
-  ];
+  List<WeatherCard> forecast =
+      List.generate(3, (_) => WeatherCard(date: DateTime.now()));
 
   @override
   void initState() {
@@ -29,7 +27,7 @@ class _WardrobeState extends State<Wardrobe> {
   }
 
   Future<void> updateForecast() async {
-    var fors = await GeoManager.instance.GetWeatherCard();
+    final fors = await GeoManager.instance.GetWeatherCard();
     if (mounted) {
       setState(() {
         forecast = fors;
@@ -39,21 +37,50 @@ class _WardrobeState extends State<Wardrobe> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-        key: _refreshIndicatorKey,
-        onRefresh: updateForecast,
-        color: Colors.black,
-        child: Container(
-          height: 120,
+    final _tabController = TabController(length: 2, vsync: this);
+    return Column(
+      children: [
+        RefreshIndicator(
+            key: _refreshIndicatorKey,
+            onRefresh: updateForecast,
+            color: Colors.black,
+            child: Container(
+              height: 120,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: forecast.length,
+                    itemBuilder: (_, index) => forecast[index]),
+              ),
+            )),
+        Container(
+          child: TabBar(
+              controller: _tabController,
+              labelColor: Colors.black,
+              labelStyle: twardrobeTabs,
+              unselectedLabelColor: Colors.grey,
+              indicatorSize: TabBarIndicatorSize.label,
+              padding: const EdgeInsets.symmetric(horizontal: 80),
+              indicatorPadding: const EdgeInsets.symmetric(vertical: 10),
+              indicator: const BoxDecoration(
+                  border: Border(bottom: BorderSide(width: 1.6))),
+              tabs: [
+                const Tab(text: "Гардероб"),
+                const Tab(text: "Образы"),
+              ]),
+        ),
+        Expanded(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-            child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: forecast.length,
-                itemBuilder: (BuildContext _, int index) {
-                  return forecast[index];
-                }),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: TabBarView(controller: _tabController, children: [
+              Container(),
+              Container(),
+            ]),
           ),
-        ));
+        )
+      ],
+    );
   }
 }

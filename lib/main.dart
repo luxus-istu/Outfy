@@ -41,11 +41,10 @@ class _MyAppState extends State<MyApp> {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.white)),
       title: "Outfy",
       home: Scaffold(
-        body: Container(
-          child: pages[pageIndex],
-          padding: const EdgeInsets.only(top: 20),
-        ),
+        body: pages[pageIndex],
         appBar: AppBar(
+          backgroundColor: Colors.white,
+          forceMaterialTransparency: true,
           title: const Text(
             "Outfy",
             style: theader,
