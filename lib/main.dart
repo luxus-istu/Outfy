@@ -36,9 +36,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.from(
-          useMaterial3: false,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.white)),
+      color: Colors.white,
+      theme: ThemeData(useMaterial3: false),
       title: "Outfy",
       home: Scaffold(
         body: pages[pageIndex],
