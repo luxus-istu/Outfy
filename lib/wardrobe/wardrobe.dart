@@ -14,7 +14,7 @@ class _WardrobeState extends State<Wardrobe> with TickerProviderStateMixin {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
 
-  List<WeatherCard> forecast =
+  List<WeatherCard> _forecast =
       List.generate(3, (_) => WeatherCard(date: DateTime.now()));
 
   @override
@@ -22,15 +22,15 @@ class _WardrobeState extends State<Wardrobe> with TickerProviderStateMixin {
     super.initState();
     Future(() async {
       _refreshIndicatorKey.currentState?.show();
-      await updateForecast();
+      await _updateForecast();
     });
   }
 
-  Future<void> updateForecast() async {
+  Future<void> _updateForecast() async {
     final fors = await GeoManager.instance.GetWeatherCard();
     if (mounted) {
       setState(() {
-        forecast = fors;
+        _forecast = fors;
       });
     }
   }
@@ -42,7 +42,7 @@ class _WardrobeState extends State<Wardrobe> with TickerProviderStateMixin {
       children: [
         RefreshIndicator(
             key: _refreshIndicatorKey,
-            onRefresh: updateForecast,
+            onRefresh: _updateForecast,
             color: Colors.black,
             child: Container(
               height: 120,
@@ -51,8 +51,8 @@ class _WardrobeState extends State<Wardrobe> with TickerProviderStateMixin {
                     const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
                 child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: forecast.length,
-                    itemBuilder: (_, index) => forecast[index]),
+                    itemCount: _forecast.length,
+                    itemBuilder: (_, index) => _forecast[index]),
               ),
             )),
         Container(

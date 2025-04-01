@@ -14,22 +14,22 @@ class _HomeState extends State<Home> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
 
-  MainTemp mainTemp = MainTemp();
+  MainTemp _mainTemp = MainTemp();
 
   @override
   void initState() {
     super.initState();
     Future(() async {
       _refreshIndicatorKey.currentState?.show();
-      await updateWeather();
+      await _updateWeather();
     });
   }
 
-  Future<void> updateWeather() async {
+  Future<void> _updateWeather() async {
     var data = await GeoManager.instance.GetWeather();
     if (mounted) {
       setState(() {
-        this.mainTemp = data;
+        this._mainTemp = data;
       });
     }
   }
@@ -39,7 +39,7 @@ class _HomeState extends State<Home> {
     return RefreshIndicator(
       color: Colors.black,
       key: _refreshIndicatorKey,
-      onRefresh: updateWeather,
+      onRefresh: _updateWeather,
       child: ListView(
         children: [
           Stack(
@@ -54,7 +54,7 @@ class _HomeState extends State<Home> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        mainTemp.Temp,
+                        _mainTemp.Temp,
                         style: twatherheader,
                       ),
                       Image.asset(
@@ -64,11 +64,11 @@ class _HomeState extends State<Home> {
                     ],
                   ),
                   Text(
-                    mainTemp.FeelsTemp,
+                    _mainTemp.FeelsTemp,
                     style: twathertext,
                   ),
                   Text(
-                    mainTemp.MaxAndMin,
+                    _mainTemp.MaxAndMin,
                     style: twathertext,
                   ),
                 ],

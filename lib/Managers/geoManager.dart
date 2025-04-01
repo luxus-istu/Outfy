@@ -10,13 +10,13 @@ const dates = ["Сегодня", "Завтра", "Послезавтра"];
 class GeoManager {
   GeoManager._();
   static final instance = GeoManager._();
-  bool serviceEnabled = false;
-  final WeatherRequest wr = WeatherRequest(dotenv.env['WEATHER_API']!);
+  bool _serviceEnabled = false;
+  final WeatherRequest _wr = WeatherRequest(dotenv.env['WEATHER_API']!);
 
   Future<void> getPermission() async {
     LocationPermission permission;
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
+    _serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!_serviceEnabled) {
       return Future.error('Location services are disabled.');
     }
 
@@ -35,7 +35,7 @@ class GeoManager {
   }
 
   Future<Position> getPos() async {
-    if (!serviceEnabled) {
+    if (!_serviceEnabled) {
       return Future.error('Location services are disabled.');
     }
     return await Geolocator.getCurrentPosition();
@@ -43,23 +43,23 @@ class GeoManager {
 
   Future<MainTemp> GetWeather() async {
     final Position position = await getPos();
-    final forecastWeather = await wr.getForecastWeatherByLocation(
+    final forecastWeather = await _wr.getForecastWeatherByLocation(
         position.latitude, position.longitude);
 
-    final realtimeWeather = await wr.getRealtimeWeatherByLocation(
+    final realtimeWeather = await _wr.getRealtimeWeatherByLocation(
         position.latitude, position.longitude);
 
     return MainTemp(
-        Temp: "${realtimeWeather.current.tempC?.toInt()}",
+        Temp: "${realtimeWeather.current.tempC?.toInt()}°",
         FeelsTemp:
-            "Ощущается как ${realtimeWeather.current.feelslikeC?.toInt()}",
+            "Ощущается как ${realtimeWeather.current.feelslikeC?.toInt()}°",
         MaxAndMin:
             "${forecastWeather.forecast.first.day.maxtempC?.toInt()}° / ${forecastWeather.forecast.first.day.mintempC?.toInt()}°");
   }
 
   Future<List<WeatherCard>> GetWeatherCard() async {
     final Position position = await getPos();
-    final forecastWeather = await wr.getForecastWeatherByLocation(
+    final forecastWeather = await _wr.getForecastWeatherByLocation(
         position.latitude, position.longitude,
         forecastDays: 3);
 
