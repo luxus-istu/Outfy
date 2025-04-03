@@ -34,11 +34,12 @@ class WeatherRequest {
 
   Future<ForecastWeather> getForecastWeatherByLocation(
       double latitude, double longitude,
-      {int forecastDays = 1}) async {
+      {int forecastDays = 1, int tp = 60}) async {
     final Map<String, dynamic>? jsonResponse =
         await _sendRequest<Map<String, dynamic>>(APIType.forecast,
             latitude: latitude,
             longitude: longitude,
+            tp: tp,
             forecastDays: forecastDays);
 
     return ForecastWeather(jsonResponse!);
@@ -74,13 +75,14 @@ class WeatherRequest {
       {String? cityName,
       double? latitude,
       double? longitude,
-      int forecastDays = 1}) async {
+      int forecastDays = 1,
+      int tp = 60}) async {
     assert((cityName != null && cityName.isNotEmpty) ||
         (latitude != null && longitude != null));
     assert(forecastDays >= minForecastDays && forecastDays <= maxForecastDays);
 
     final String url =
-        _buildUrl(apiType, cityName, latitude, longitude, forecastDays);
+        _buildUrl(apiType, cityName, latitude, longitude, forecastDays, tp);
 
     final http.Response response = await _httpClient.get(Uri.parse(url));
     final dynamic jsonBody = json.decode(response.body);
@@ -93,7 +95,7 @@ class WeatherRequest {
   }
 
   String _buildUrl(APIType apiType, String? cityName, double? latitude,
-      double? longitude, int forecastDays) {
+      double? longitude, int forecastDays, int tp) {
     assert((cityName != null && cityName.isNotEmpty) ||
         (latitude != null && longitude != null));
     assert(forecastDays >= minForecastDays && forecastDays <= maxForecastDays);
@@ -109,6 +111,7 @@ class WeatherRequest {
 
     if (apiType == APIType.forecast) {
       url += '&days=$forecastDays';
+      url += '&tp==$tp';
     }
 
     return url;

@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 class LocationData {
   final String? _name;
   final String? _region;
@@ -130,7 +131,6 @@ class HourData {
   final int? _chanceOfSnow;
   final double? _visKm;
   final double? _gustKph;
-  final double? _uv;
 
   const HourData(
       this._time,
@@ -153,8 +153,7 @@ class HourData {
       this._willItSnow,
       this._chanceOfSnow,
       this._visKm,
-      this._gustKph,
-      this._uv);
+      this._gustKph);
 
   String? get time => _time;
   double? get tempC => _tempC;
@@ -177,7 +176,6 @@ class HourData {
   int? get chanceOfSnow => _chanceOfSnow;
   double? get visKm => _visKm;
   double? get gustKph => _gustKph;
-  double? get uv => _uv;
 }
 
 class ForecastDayData {

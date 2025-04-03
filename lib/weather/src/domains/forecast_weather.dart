@@ -78,8 +78,7 @@ class ForecastWeather {
             jsonHour?['will_it_snow'],
             jsonHour?['chance_of_snow'],
             jsonHour?['vis_km'],
-            jsonHour?['gust_kph'],
-            jsonHour?['uv']);
+            jsonHour?['gust_kph']);
 
         hours.add(hour);
       });
