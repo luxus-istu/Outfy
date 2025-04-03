@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:outfy/Managers/geoManager.dart';
+import 'package:outfy/forecast/Forecast.dart';
 import 'package:outfy/home/home.dart';
 import 'package:outfy/utils/theme.dart';
 import 'package:outfy/wardrobe/wardrobe.dart';
@@ -27,15 +28,29 @@ class _MyAppState extends State<MyApp> {
     const Home(),
     const Wardrobe(),
     Container(),
+    const Forecast(),
     Container(),
-    Container(),
-    Container()
+  ];
+
+  final titles = [
+    "Outfy",
+    "Wardrobe",
+    "Add item",
+    "Forecast",
+    "Profile",
+  ];
+
+  final titlesicon = [
+    Image.asset("assets/images/profile-avatar.png", width: 44),
+    Image.asset("assets/images/unbrela-icon.png", width: 36),
+    Image.asset("assets/images/unbrela-icon.png", width: 36),
+    Image.asset("assets/images/unbrela-icon.png", width: 36),
+    Image.asset("assets/images/profile-avatar.png", width: 44),
   ];
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
       color: Colors.white,
       theme: ThemeData(useMaterial3: false),
       title: "Outfy",
@@ -44,18 +59,14 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           backgroundColor: Colors.white,
           forceMaterialTransparency: true,
-          title: const Text(
-            "Outfy",
+          title: Text(
+            titles[pageIndex],
             style: theader,
           ),
           actions: [
             Container(
-              padding: EdgeInsets.only(right: 20),
-              child: Image.asset(
-                "assets/images/profile-avatar.png",
-                width: 44,
-              ),
-            )
+                padding: const EdgeInsets.only(right: 20),
+                child: titlesicon[pageIndex])
           ],
         ),
         bottomNavigationBar: Container(

@@ -44,6 +44,18 @@ const twardrobeTabs = TextStyle(
     fontFamily: "Montserrat",
     color: Color(0xff000000));
 
+const twardrobeTabsGray = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    fontFamily: "Montserrat",
+    color: Color(0xff8F8F8F));
+
+const tforecastHourly = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w800,
+    fontFamily: "Outfit",
+    color: Color(0xff000000));
+
 const weatherBlur = SizedBox(
   width: 220,
   height: 220,

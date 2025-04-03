@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:outfy/Managers/geoManager.dart';
 import 'package:outfy/Managers/types/types.dart';
 import 'package:outfy/utils/theme.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -11,10 +12,11 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-      GlobalKey<RefreshIndicatorState>();
+  final _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
 
-  MainTemp _mainTemp = MainTemp();
+  var _mainTemp = MainTemp();
+
+  var _isLoading = true;
 
   @override
   void initState() {
@@ -30,6 +32,7 @@ class _HomeState extends State<Home> {
     if (mounted) {
       setState(() {
         this._mainTemp = data;
+        this._isLoading = false;
       });
     }
   }
@@ -47,32 +50,35 @@ class _HomeState extends State<Home> {
             children: [
               Image.asset("assets/images/cloudy.jpg"),
               weatherBlur,
-              Column(
-                children: [
-                  Row(
-                    spacing: 12,
-                    mainAxisAlignment: MainAxisAlignment.center,
+              Skeletonizer(
+                  enabled: _isLoading,
+                  enableSwitchAnimation: true,
+                  child: Column(
                     children: [
-                      Text(
-                        _mainTemp.Temp,
-                        style: twatherheader,
+                      Row(
+                        spacing: 12,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            _mainTemp.Temp,
+                            style: twatherheader,
+                          ),
+                          Image.asset(
+                            "assets/images/cloudy-icon.png",
+                            width: 36,
+                          )
+                        ],
                       ),
-                      Image.asset(
-                        "assets/images/cloudy-icon.png",
-                        width: 36,
-                      )
+                      Text(
+                        _mainTemp.FeelsTemp,
+                        style: twathertext,
+                      ),
+                      Text(
+                        _mainTemp.MaxAndMin,
+                        style: twathertext,
+                      ),
                     ],
-                  ),
-                  Text(
-                    _mainTemp.FeelsTemp,
-                    style: twathertext,
-                  ),
-                  Text(
-                    _mainTemp.MaxAndMin,
-                    style: twathertext,
-                  ),
-                ],
-              )
+                  )),
             ],
           ),
           Container(

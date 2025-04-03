@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:outfy/Managers/geoManager.dart';
 import 'package:outfy/utils/theme.dart';
 import 'package:outfy/utils/weatherCard.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class Wardrobe extends StatefulWidget {
   const Wardrobe({super.key});
@@ -11,11 +12,12 @@ class Wardrobe extends StatefulWidget {
 }
 
 class _WardrobeState extends State<Wardrobe> with TickerProviderStateMixin {
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-      GlobalKey<RefreshIndicatorState>();
+  final _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
+  var _isLoading = true;
 
-  List<WeatherCard> _forecast =
-      List.generate(3, (_) => WeatherCard(date: DateTime.now()));
+  ListView _forecastList = ListView.builder(
+      itemCount: 3,
+      itemBuilder: (_, index) => WeatherCard(date: DateTime.now()));
 
   @override
   void initState() {
@@ -30,7 +32,8 @@ class _WardrobeState extends State<Wardrobe> with TickerProviderStateMixin {
     final fors = await GeoManager.instance.GetWeatherCard();
     if (mounted) {
       setState(() {
-        _forecast = fors;
+        _forecastList = fors;
+        _isLoading = false;
       });
     }
   }
@@ -45,15 +48,13 @@ class _WardrobeState extends State<Wardrobe> with TickerProviderStateMixin {
             onRefresh: _updateForecast,
             color: Colors.black,
             child: Container(
-              height: 120,
+              height: 85,
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-                child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: _forecast.length,
-                    itemBuilder: (_, index) => _forecast[index]),
-              ),
+                  padding: const EdgeInsets.only(left: 20),
+                  child: Skeletonizer(
+                      enabled: _isLoading,
+                      enableSwitchAnimation: true,
+                      child: _forecastList)),
             )),
         Container(
           child: TabBar(
