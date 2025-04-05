@@ -20,6 +20,12 @@ const twardrobedatetext = TextStyle(
     fontFamily: "Montserrat",
     color: Color(0xff8F8F8F));
 
+const taddingfieldname = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+    fontFamily: "Montserrat",
+    color: Color(0xff000000));
+
 const twardrobetext = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w600,
@@ -55,6 +61,12 @@ const tforecastHourly = TextStyle(
     fontWeight: FontWeight.w800,
     fontFamily: "Outfit",
     color: Color(0xff000000));
+
+const taddingtopbar = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w600,
+    fontFamily: "Montserrat",
+    color: Color(0xff101010));
 
 const weatherBlur = SizedBox(
   width: 220,

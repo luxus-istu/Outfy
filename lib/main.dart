@@ -7,7 +7,7 @@ import 'package:outfy/home/home.dart';
 import 'package:outfy/utils/theme.dart';
 import 'package:outfy/wardrobe/wardrobe.dart';
 
-void main() async {
+Future<void> main() async {
   await dotenv.load(fileName: ".env");
   await GeoManager.instance.getPermission();
   await initializeDateFormatting('ru');
@@ -27,25 +27,19 @@ class _MyAppState extends State<MyApp> {
   final pages = [
     const Home(),
     const Wardrobe(),
-    Container(),
     const Forecast(),
-    Container(),
   ];
 
   final titles = [
     "Outfy",
     "Wardrobe",
-    "Add item",
     "Forecast",
-    "Profile",
   ];
 
   final titlesicon = [
     Image.asset("assets/images/profile-avatar.png", width: 44),
     Image.asset("assets/images/unbrela-icon.png", width: 36),
     Image.asset("assets/images/unbrela-icon.png", width: 36),
-    Image.asset("assets/images/unbrela-icon.png", width: 36),
-    Image.asset("assets/images/profile-avatar.png", width: 44),
   ];
 
   @override
@@ -105,32 +99,10 @@ class _MyAppState extends State<MyApp> {
                   });
                 },
                 child: Image.asset(
-                  "assets/images/add-icon.png",
-                  height: 48,
-                ),
-              ),
-              InkResponse(
-                onTap: () {
-                  setState(() {
-                    pageIndex = 3;
-                  });
-                },
-                child: Image.asset(
                   "assets/images/cal-icon.png",
                   height: 40,
                 ),
-              ),
-              InkResponse(
-                onTap: () {
-                  setState(() {
-                    pageIndex = 4;
-                  });
-                },
-                child: Image.asset(
-                  "assets/images/user-icon.png",
-                  height: 40,
-                ),
-              ),
+              )
             ],
           ),
         ),

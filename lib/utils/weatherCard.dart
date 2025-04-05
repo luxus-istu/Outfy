@@ -6,7 +6,7 @@ const container_padding =
     const EdgeInsets.symmetric(vertical: 11, horizontal: 16);
 const container_decoration = const BoxDecoration(
     boxShadow: [
-      BoxShadow(blurRadius: 4, offset: Offset(0, 4), blurStyle: BlurStyle.outer)
+      BoxShadow(blurRadius: 4, offset: Offset(0, 4), color: Color(0x1a000000))
     ],
     color: Color(0xffF8F8F8),
     borderRadius: BorderRadius.all(Radius.circular(12)));
