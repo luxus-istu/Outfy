@@ -49,15 +49,13 @@ class GeoManager {
     final forecastWeather = await _wr.getForecastWeatherByLocation(
         position.latitude, position.longitude);
 
-    final realtimeWeather = await _wr.getRealtimeWeatherByLocation(
-        position.latitude, position.longitude);
-
     return MainTemp(
-        Temp: "${realtimeWeather.current.tempC?.toInt()}°",
+        Temp: "${forecastWeather.current.tempC?.toInt()}°",
         FeelsTemp:
-            "Ощущается как ${realtimeWeather.current.feelslikeC?.toInt()}°",
+            "Ощущается как ${forecastWeather.current.feelslikeC?.toInt()}°",
         MaxAndMin:
-            "${forecastWeather.forecast.first.day.maxtempC?.toInt()}° / ${forecastWeather.forecast.first.day.mintempC?.toInt()}°");
+            "${forecastWeather.forecast.first.day.maxtempC?.toInt()}° / ${forecastWeather.forecast.first.day.mintempC?.toInt()}°",
+        WillItRain: forecastWeather.forecast.first.day.dailyWillItRain == 1);
   }
 
   Future<List<HourData>> GetForecastRaw() async {
@@ -100,7 +98,9 @@ class GeoManager {
                   "${day.day.maxtempC?.toInt()}° / ${day.day.mintempC?.toInt()}°",
               date: DateTime.parse(day.date ?? ""),
               text_date: dates[index],
-              icon_path: "assets/images/cloudy-icon2.png");
+              icon_path: day.day.dailyWillItRain == 1
+                  ? "assets/images/rain-icon.png"
+                  : "assets/images/cloudy-icon2.png");
         });
   }
 }

@@ -62,6 +62,12 @@ const tforecastHourly = TextStyle(
     fontFamily: "Outfit",
     color: Color(0xff000000));
 
+const twardrobeoutfitname = TextStyle(
+    fontSize: 24,
+    fontWeight: FontWeight.w800,
+    fontFamily: "Montserrat",
+    color: Color(0xffffffff));
+
 const taddingtopbar = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w600,

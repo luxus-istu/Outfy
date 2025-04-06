@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:outfy/Managers/geoManager.dart';
-import 'package:outfy/forecast/Forecast.dart';
-import 'package:outfy/home/home.dart';
 import 'package:outfy/utils/theme.dart';
-import 'package:outfy/wardrobe/wardrobe.dart';
+
+import 'utils/Constants.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: ".env");
@@ -24,24 +23,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   int pageIndex = 0;
 
-  final pages = [
-    const Home(),
-    const Wardrobe(),
-    const Forecast(),
-  ];
-
-  final titles = [
-    "Outfy",
-    "Wardrobe",
-    "Forecast",
-  ];
-
-  final titlesicon = [
-    Image.asset("assets/images/profile-avatar.png", width: 44),
-    Image.asset("assets/images/unbrela-icon.png", width: 36),
-    Image.asset("assets/images/unbrela-icon.png", width: 36),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -53,15 +34,11 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           backgroundColor: Colors.white,
           forceMaterialTransparency: true,
+          centerTitle: true,
           title: Text(
             titles[pageIndex],
             style: theader,
           ),
-          actions: [
-            Container(
-                padding: const EdgeInsets.only(right: 20),
-                child: titlesicon[pageIndex])
-          ],
         ),
         bottomNavigationBar: Container(
           height: 70,

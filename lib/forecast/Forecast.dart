@@ -57,8 +57,11 @@ class _ForecastState extends State<Forecast> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
           image: DecorationImage(
-              image: AssetImage("assets/images/cloudy.jpg"),
-              fit: BoxFit.cover)),
+        image: AssetImage(_mainTemp.WillItRain
+            ? "assets/images/cloudy.jpg"
+            : "assets/images/sunny.jpg"),
+        fit: BoxFit.cover,
+      )),
       child: RefreshIndicator(
         color: Colors.black,
         key: _refreshIndicatorKey,
@@ -90,8 +93,11 @@ class _ForecastState extends State<Forecast> {
                               style: twatherheader,
                             ),
                             Image.asset(
-                              "assets/images/cloudy-icon.png",
+                              _mainTemp.WillItRain
+                                  ? "assets/images/rain-icon.png"
+                                  : "assets/images/cloudy-icon.png",
                               width: 36,
+                              color: Colors.white,
                             )
                           ],
                         ),

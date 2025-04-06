@@ -1,19 +1,13 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:outfy/Managers/ClothManager.dart';
 import 'package:uuid/uuid.dart';
 
 import '../Managers/types/types.dart';
+import '../utils/Constants.dart';
 import '../utils/theme.dart';
-
-const clothstypeList = <String>["Выбрать", 'One', 'Two', 'Three', 'Four'];
-const seasonTypeList = <String>["Зима", "Весна", "Лето", "Осень"];
-const sizeTypeList = <String>["XS", "S", "M", "L", "XL", "XXL"];
-const defaultOutfitTypes = <String>["Casual", "Business", "Formal", "Sport"];
 
 class AddingItem extends StatefulWidget {
   const AddingItem({super.key});
@@ -27,6 +21,7 @@ class _AddingItemState extends State<AddingItem> {
   final _nameController = TextEditingController();
   final _weatherRecomendController = TextEditingController();
   final _outfitTypeController = TextEditingController();
+  final _clothManager = const ClothManager();
 
   File? _image;
   String _clothstype = clothstypeList.first;
@@ -36,31 +31,8 @@ class _AddingItemState extends State<AddingItem> {
   double _minTemp = -10;
   double _maxTemp = 6;
 
-  Future<String> _saveImagePermanently(File image) async {
-    final directory = await getApplicationDocumentsDirectory();
-    final newPath =
-        '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
-    return image.copy(newPath).then((file) => file.path);
-  }
-
-  Future<List<String>> _getExistingOutfitTypes() async {
-    final prefs = await SharedPreferences.getInstance();
-    final existingItemsJson = prefs.getString('clothing_items') ?? '[]';
-    final List<dynamic> existingItems = jsonDecode(existingItemsJson);
-    final List<ClothingItem> items = existingItems
-        .map((item) => ClothingItem.fromJson(item as Map<String, dynamic>))
-        .toList();
-    final outfitTypes = items.map((item) => item.outfitType).toSet().toList();
-    return [...defaultOutfitTypes, ...outfitTypes]
-        .toSet()
-        .where((type) => type.isNotEmpty)
-        .toList();
-  }
-
   Future<void> _saveClothingItem() async {
-    final prefs = await SharedPreferences.getInstance();
-    final imagePath =
-        _image != null ? await _saveImagePermanently(_image!) : null;
+    final imagePath = await _clothManager.SaveImagePermanently(_image!);
     final clothingItem = ClothingItem(
       id: Uuid().v4(),
       name: _nameController.text,
@@ -72,17 +44,7 @@ class _AddingItemState extends State<AddingItem> {
       imagePath: imagePath,
     );
 
-    final existingItemsJson = prefs.getString('clothing_items') ?? '[]';
-    final List<dynamic> existingItems = jsonDecode(existingItemsJson);
-    final List<ClothingItem> items = existingItems
-        .map((item) => ClothingItem.fromJson(item as Map<String, dynamic>))
-        .toList();
-
-    items.add(clothingItem);
-
-    final updatedItemsJson =
-        jsonEncode(items.map((item) => item.toJson()).toList());
-    await prefs.setString('clothing_items', updatedItemsJson);
+    await _clothManager.SaveClothingItem(clothingItem);
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Предмет одежды сохранен!")),
@@ -180,7 +142,7 @@ class _AddingItemState extends State<AddingItem> {
               ],
               content: Container(
                 child: FutureBuilder<List<String>>(
-                  future: _getExistingOutfitTypes(),
+                  future: _clothManager.GetExistingOutfitTypes(),
                   builder: (_, snapshot) {
                     if (!snapshot.hasData) {
                       return const CircularProgressIndicator();
@@ -436,7 +398,7 @@ class _AddingItemState extends State<AddingItem> {
       children: [
         Flexible(
           child: Text(
-            "Рекомендация по погоде",
+            "Погода",
             style: taddingfieldname,
             overflow: TextOverflow.ellipsis,
           ),
@@ -538,11 +500,21 @@ class _AddingItemState extends State<AddingItem> {
     return SingleChildScrollView(
       child: Container(
         width: double.maxFinite,
-        padding: const EdgeInsets.only(top: 20),
+        decoration: const BoxDecoration(
+            border: Border(top: BorderSide(color: Colors.grey)),
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+        padding: const EdgeInsets.only(top: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           spacing: 26,
           children: [
+            Container(
+              width: MediaQuery.sizeOf(context).width / 5,
+              decoration: const BoxDecoration(
+                  border: Border(
+                      top: BorderSide(color: Color(0xffc5c5c5), width: 2))),
+            ),
             _getImage(),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30),
