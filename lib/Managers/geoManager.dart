@@ -1,8 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:outfy/Managers/types/types.dart';
-import 'package:outfy/utils/weatherCard.dart';
 
 import '../weather/weatherapi.dart';
 
@@ -80,27 +78,5 @@ class GeoManager {
     final pos = await getPos();
     return await _wr.getForecastWeatherByLocation(pos.latitude, pos.longitude,
         forecastDays: 3);
-  }
-
-  Future<ListView> GetWeatherCard() async {
-    final Position position = await getPos();
-    final forecastWeather = await _wr.getForecastWeatherByLocation(
-        position.latitude, position.longitude,
-        forecastDays: 3);
-
-    return ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: forecastWeather.forecast.length,
-        itemBuilder: (_, index) {
-          final day = forecastWeather.forecast[index];
-          return WeatherCard(
-              MaxAndMin:
-                  "${day.day.maxtempC?.toInt()}° / ${day.day.mintempC?.toInt()}°",
-              date: DateTime.parse(day.date ?? ""),
-              text_date: dates[index],
-              icon_path: day.day.dailyWillItRain == 1
-                  ? "assets/images/rain-icon.png"
-                  : "assets/images/cloudy-icon2.png");
-        });
   }
 }

@@ -3,15 +3,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:outfy/Managers/ClothManager.dart';
-import 'package:outfy/Managers/geoManager.dart';
 import 'package:outfy/adding/Adding.dart';
 import 'package:outfy/outfits/Outfits.dart';
 import 'package:outfy/utils/theme.dart';
-import 'package:outfy/utils/weatherCard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../Managers/types/types.dart';
+
+const _clothAdding = AddingItem();
+const _outfitAdding = Outfits();
+const _clothManager = ClothManager();
 
 class Wardrobe extends StatefulWidget {
   const Wardrobe({super.key});
@@ -22,16 +24,9 @@ class Wardrobe extends StatefulWidget {
 
 class _WardrobeState extends State<Wardrobe> with TickerProviderStateMixin {
   final _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
-  final _clothAdding = const AddingItem();
-  final _outfitAdding = const Outfits();
-  final _clothManager = const ClothManager();
 
   var _isLoading = true;
   String? _selectedOutfitType;
-
-  ListView _forecastList = ListView.builder(
-      itemCount: 3,
-      itemBuilder: (_, index) => WeatherCard(date: DateTime.now()));
 
   List<ClothingItem> _clothingItems = [];
   List<Outfit> _outfits = [];
@@ -41,10 +36,27 @@ class _WardrobeState extends State<Wardrobe> with TickerProviderStateMixin {
     super.initState();
     Future(() async {
       _refreshIndicatorKey.currentState?.show();
-      await _updateForecast();
-      _clothingItems = await _clothManager.LoadClothingItems();
-      _outfits = await _clothManager.LoadOutfits();
+      await _update();
     });
+  }
+
+  Future<void> _update() async {
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
+
+    final cloths = await _clothManager.LoadClothingItems();
+    final outfits = await _clothManager.LoadOutfits();
+
+    if (mounted) {
+      setState(() {
+        _clothingItems = cloths;
+        _outfits = outfits;
+        _isLoading = false;
+      });
+    }
   }
 
   List<ClothingItem> _resolveItems(List<String> itemIds) {
@@ -74,16 +86,6 @@ class _WardrobeState extends State<Wardrobe> with TickerProviderStateMixin {
     return _clothingItems
         .where((item) => item.outfitType == _selectedOutfitType)
         .toList();
-  }
-
-  Future<void> _updateForecast() async {
-    final fors = await GeoManager.instance.GetWeatherCard();
-    if (mounted) {
-      setState(() {
-        _forecastList = fors;
-        _isLoading = false;
-      });
-    }
   }
 
   void _showDeleteConfirmationDialog<T>(
@@ -117,7 +119,7 @@ class _WardrobeState extends State<Wardrobe> with TickerProviderStateMixin {
     );
   }
 
-  Widget _addingNewButton<T extends StatefulWidget>(T instance) {
+  Widget _addingNewButton<T extends Widget>(T instance) {
     return GestureDetector(
       onTap: () {
         showBottomSheet(
@@ -139,7 +141,7 @@ class _WardrobeState extends State<Wardrobe> with TickerProviderStateMixin {
             children: const [
               Icon(Icons.add, size: 40, color: Colors.black54),
               SizedBox(height: 8),
-              Text(
+              const Text(
                 "Добавить",
                 style: TextStyle(
                   fontSize: 16,
@@ -307,64 +309,62 @@ class _WardrobeState extends State<Wardrobe> with TickerProviderStateMixin {
   }
 
   Widget _getOutfits() {
-    return GridView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 1,
-      ),
-      itemCount: _outfits.length + 1,
-      itemBuilder: (context, index) {
-        if (index == 0) {
-          return _addingNewButton(_outfitAdding);
-        }
-
-        final outfit = _outfits[index - 1];
-
-        return GestureDetector(
-          onTap: () {
-            _showOutfitDetails(context, outfit);
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: BorderRadius.circular(12),
-              image: DecorationImage(
-                image: FileImage(File(outfit.imagePath)),
-                fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(
-                    Colors.black.withValues(alpha: .4), BlendMode.darken),
-              ),
+    return _outfits.isEmpty
+        ? _addingNewButton(_outfitAdding)
+        : GridView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1,
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(outfit.name, style: twardrobeoutfitname),
-                  const SizedBox(height: 4),
-                  Text(outfit.outfitType, style: twathertext),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: GestureDetector(
-                      onTap: () => _showDeleteConfirmationDialog<Outfit>(
-                          outfit, _clothManager.DeleteOutfit),
-                      child: Icon(
-                        Icons.delete,
-                        color: Colors.red,
-                        size: 24,
-                      ),
+            itemCount: _outfits.length,
+            itemBuilder: (context, index) {
+              final outfit = _outfits[index];
+
+              return GestureDetector(
+                onTap: () {
+                  _showOutfitDetails(context, outfit);
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(12),
+                    image: DecorationImage(
+                      image: FileImage(File(outfit.imagePath)),
+                      fit: BoxFit.cover,
+                      colorFilter: ColorFilter.mode(
+                          Colors.black.withValues(alpha: .4), BlendMode.darken),
                     ),
                   ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(outfit.name, style: twardrobeoutfitname),
+                        const SizedBox(height: 4),
+                        Text(outfit.outfitType, style: twathertext),
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: GestureDetector(
+                            onTap: () => _showDeleteConfirmationDialog<Outfit>(
+                                outfit, _clothManager.DeleteOutfit),
+                            child: Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                              size: 24,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
   }
 
   void _showOutfitDetails(BuildContext context, Outfit outfit) {
@@ -419,19 +419,10 @@ class _WardrobeState extends State<Wardrobe> with TickerProviderStateMixin {
     final _tabController = TabController(length: 2, vsync: this);
     return RefreshIndicator(
       key: _refreshIndicatorKey,
-      onRefresh: _updateForecast,
+      onRefresh: _update,
       color: Colors.black,
       child: ListView(
         children: [
-          Container(
-            height: 85,
-            child: Padding(
-                padding: const EdgeInsets.only(left: 20),
-                child: Skeletonizer(
-                    enabled: _isLoading,
-                    enableSwitchAnimation: true,
-                    child: _forecastList)),
-          ),
           Container(
             child: TabBar(
                 controller: _tabController,
@@ -451,7 +442,7 @@ class _WardrobeState extends State<Wardrobe> with TickerProviderStateMixin {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             constraints: BoxConstraints(
-                maxHeight: MediaQuery.sizeOf(context).height * 0.65),
+                maxHeight: MediaQuery.sizeOf(context).height * 0.75),
             child: Skeletonizer(
               enabled: _isLoading,
               enableSwitchAnimation: true,

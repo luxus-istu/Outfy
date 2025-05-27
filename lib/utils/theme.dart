@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 const borderRad = BorderRadius.all(Radius.circular(15));
-const weatherBlurColor = Color(0x32454545);
+const weatherBlurColor = Color.fromARGB(70, 69, 69, 69);
 
 const theader = TextStyle(
     fontSize: 36,

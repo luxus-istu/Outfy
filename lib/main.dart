@@ -21,6 +21,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  final _navigatorKey = GlobalKey<NavigatorState>();
   int pageIndex = 0;
 
   @override
@@ -30,60 +31,87 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(useMaterial3: false),
       title: "Outfy",
       home: Scaffold(
-        body: pages[pageIndex],
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          forceMaterialTransparency: true,
-          centerTitle: true,
-          title: Text(
-            titles[pageIndex],
-            style: theader,
+          body: Navigator(key: _navigatorKey, onGenerateRoute: generateRoute),
+          appBar: AppBar(
+            backgroundColor: Colors.white,
+            forceMaterialTransparency: true,
+            centerTitle: true,
+            title: Text(
+              titles[pageIndex],
+              style: theader,
+            ),
           ),
-        ),
-        bottomNavigationBar: Container(
-          height: 70,
-          decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: Color(0xffF2F2F2)))),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              InkResponse(
-                onTap: () {
-                  setState(() {
-                    pageIndex = 0;
-                  });
-                },
-                child: Image.asset(
-                  "assets/images/home-icon.png",
-                  height: 40,
-                ),
-              ),
-              InkResponse(
-                onTap: () {
-                  setState(() {
-                    pageIndex = 1;
-                  });
-                },
-                child: Image.asset(
-                  "assets/images/wardrobe-icon.png",
-                  height: 40,
-                ),
-              ),
-              InkResponse(
-                onTap: () {
-                  setState(() {
-                    pageIndex = 2;
-                  });
-                },
-                child: Image.asset(
-                  "assets/images/cal-icon.png",
-                  height: 40,
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
+          bottomNavigationBar: BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              iconSize: 40,
+              showSelectedLabels: false,
+              showUnselectedLabels: false,
+              currentIndex: pageIndex,
+              onTap: _onTap,
+              items: <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                    activeIcon: Icon(
+                      Icons.home,
+                      color: Colors.black,
+                    ),
+                    icon: Icon(
+                      Icons.home_outlined,
+                      color: Colors.black,
+                    ),
+                    label: ""),
+                BottomNavigationBarItem(
+                    icon: Image.asset(
+                      "assets/icons/wardrobe-outline.png",
+                      height: 40,
+                    ),
+                    activeIcon: Image.asset(
+                      "assets/icons/wardrobe.png",
+                      height: 40,
+                    ),
+                    label: ""),
+                BottomNavigationBarItem(
+                    icon: Icon(Icons.calendar_today_outlined,
+                        color: Colors.black),
+                    activeIcon: Icon(Icons.calendar_today, color: Colors.black),
+                    label: "")
+              ])),
     );
+  }
+
+  _onTap(int tabIndex) {
+    switch (tabIndex) {
+      case 1:
+        _navigatorKey.currentState?.pushReplacementNamed("Wardrobe");
+        break;
+      case 2:
+        _navigatorKey.currentState?.pushReplacementNamed("Forecast");
+        break;
+      default:
+        _navigatorKey.currentState?.pushReplacementNamed("Home");
+        break;
+    }
+    setState(() {
+      pageIndex = tabIndex;
+    });
+  }
+
+  Route<dynamic> generateRoute(RouteSettings settings) {
+    switch (settings.name) {
+      case "Wardrobe":
+        setState(() {
+          pageIndex = 1;
+        });
+        return MaterialPageRoute(builder: (_) => wardrobe);
+      case "Forecast":
+        setState(() {
+          pageIndex = 2;
+        });
+        return MaterialPageRoute(builder: (_) => forecst);
+      default:
+        setState(() {
+          pageIndex = 0;
+        });
+        return MaterialPageRoute(builder: (_) => home);
+    }
   }
 }

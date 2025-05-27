@@ -2,13 +2,11 @@ import '../forecast/Forecast.dart';
 import '../home/home.dart';
 import '../wardrobe/wardrobe.dart';
 
-const pages = [
-  const Home(),
-  const Wardrobe(),
-  const Forecast(),
-];
+const home = Home();
+const wardrobe = Wardrobe();
+const forecst = Forecast();
 
-const titles = [
+const titles = <String>[
   "Outfy",
   "Wardrobe",
   "Forecast",

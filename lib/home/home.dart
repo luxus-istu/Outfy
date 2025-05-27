@@ -30,8 +30,6 @@ class _HomeState extends State<Home> {
     Future(() async {
       _refreshIndicatorKey.currentState?.show();
       await _updateWeather();
-      _clothingItems = await _clothManager.LoadClothingItems();
-      _outfits = await _clothManager.LoadOutfits();
     });
   }
 
@@ -40,10 +38,21 @@ class _HomeState extends State<Home> {
   }
 
   Future<void> _updateWeather() async {
-    var data = await GeoManager.instance.GetWeather();
+    if (mounted) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
+
+    final data = await GeoManager.instance.GetWeather();
+    final clothingItems = await _clothManager.LoadClothingItems();
+    final outfits = await _clothManager.LoadOutfits();
+
     if (mounted) {
       setState(() {
         this._mainTemp = data;
+        this._clothingItems = clothingItems;
+        this._outfits = outfits;
         this._isLoading = false;
       });
     }
@@ -202,9 +211,9 @@ class _HomeState extends State<Home> {
                 padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 4,
                   children: [
                     Text(outfit.name, style: twardrobeoutfitname),
-                    const SizedBox(height: 4),
                     Text(outfit.outfitType, style: twathertext),
                   ],
                 ),
@@ -317,46 +326,151 @@ class _HomeState extends State<Home> {
                   )),
             ],
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              children: [
-                Row(
-                  spacing: 14,
-                  children: [
-                    Image.asset(
-                      "assets/images/wardrobe-icon.png",
-                      height: 40,
-                    ),
-                    const Text(
-                      "Из вашего гардероба\nхорошо подойдёт:",
-                      style: twardrobeTitle,
-                    )
-                  ],
+          Column(
+            children: [
+              Skeletonizer(
+                enableSwitchAnimation: true,
+                enabled: _isLoading,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: _clothingItems.isEmpty
+                      ? Column(
+                          spacing: 8,
+                          children: [
+                            const Text(
+                              "У вас пустой гардероб",
+                              style: const TextStyle(
+                                  fontFamily: "Montserrat",
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.of(context)
+                                    .pushReplacementNamed("Wardrobe");
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xffF8F8F8),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                      color:
+                                          Colors.grey.withValues(alpha: 0.5)),
+                                ),
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: const [
+                                      Icon(Icons.add,
+                                          size: 40, color: Colors.black54),
+                                      SizedBox(height: 8),
+                                      const Text(
+                                        "Добавить одежду",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black54,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        )
+                      : Column(
+                          children: [
+                            Row(
+                              spacing: 14,
+                              children: [
+                                Image.asset(
+                                  "assets/images/wardrobe-icon.png",
+                                  height: 40,
+                                ),
+                                const Text(
+                                  "Из вашего гардероба\nхорошо подойдёт:",
+                                  style: twardrobeTitle,
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
                 ),
-              ],
-            ),
+              ),
+              _getWardrobeItems(),
+            ],
           ),
-          _getWardrobeItems(),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              children: [
-                Row(
-                  spacing: 14,
-                  children: [
-                    Image.asset(
-                      "assets/images/box-icon.png",
-                      height: 28,
-                    ),
-                    const Text(
-                      "Стоит посмотреть ваши\nсоставленные наборы одежды:",
-                      style: twardrobeTitle,
+          Skeletonizer(
+            enableSwitchAnimation: true,
+            enabled: _isLoading,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _outfits.isEmpty
+                  ? Column(
+                      spacing: 8,
+                      children: [
+                        const Text(
+                          "У вас нет образов",
+                          style: const TextStyle(
+                              fontFamily: "Montserrat",
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.of(context)
+                                .pushReplacementNamed("Wardrobe");
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 8),
+                            decoration: BoxDecoration(
+                              color: const Color(0xffF8F8F8),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                  color: Colors.grey.withValues(alpha: 0.5)),
+                            ),
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Icon(Icons.add,
+                                      size: 40, color: Colors.black54),
+                                  SizedBox(height: 8),
+                                  const Text(
+                                    "Добавить образ",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black54,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
                     )
-                  ],
-                ),
-                _getOutfits()
-              ],
+                  : Column(
+                      children: [
+                        Row(
+                          spacing: 14,
+                          children: [
+                            Image.asset(
+                              "assets/images/box-icon.png",
+                              height: 28,
+                            ),
+                            const Text(
+                              "Стоит посмотреть ваши\nсоставленные наборы одежды:",
+                              style: twardrobeTitle,
+                            )
+                          ],
+                        ),
+                        _getOutfits()
+                      ],
+                    ),
             ),
           ),
         ],
